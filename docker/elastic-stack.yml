@@ -1,0 +1,67 @@
+version: '3'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+    container_name: elasticsearch-master
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ../elasticsearch/master/config:/usr/share/elasticsearch/config
+      - ../elasticsearch/master/data:/usr/share/elasticsearch/data
+      - ../elasticsearch/master/logs:/usr/share/elasticsearch/logs
+    ports:
+      - 9200:9200
+    networks:
+      - esnet
+
+  elasticsearch-slave-1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+    container_name: elasticsearch-slave-1
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ../elasticsearch/slave-1/config:/usr/share/elasticsearch/config
+      - ../elasticsearch/slave-1/data:/usr/share/elasticsearch/data
+      - ../elasticsearch/slave-1/logs:/usr/share/elasticsearch/logs
+    networks:
+      - esnet
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.1.1
+    ports:
+      - 5601:5601
+    volumes:
+      - ../kibana/config:/usr/share/kibana/config
+      - ../kibana/data:/usr/share/kibana/data
+    networks:
+      - esnet
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:6.1.1
+    ports:
+      - 5044:5044
+    volumes:
+      - ../logstash/config:/usr/share/logstash/config
+      - ../logstash/data:/usr/share/logstash/data
+      - ../logstash/pipeline:/usr/share/logstash/pipeline
+    networks:
+      - esnet
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:6.1.1
+    volumes:
+      - ../filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ../filebeat/prospectors.d:/usr/share/filebeat/prospectors.d
+      - ../filebeat/logs:/usr/share/filebeat/logs
+      - ../filebeat/data:/usr/share/filebeat/data
+      - /path/to/demo-application/logs:/applications/demo-application/logs
+    networks:
+      - esnet
+
+networks:
+  esnet:

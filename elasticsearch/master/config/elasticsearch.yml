@@ -1,0 +1,21 @@
+node:
+  name: master
+
+cluster:
+  name: docker-cluster
+
+network:
+  host: 0.0.0.0
+
+path:
+  data: /usr/share/elasticsearch/data
+  logs: /usr/share/elasticsearch/logs
+
+bootstrap:
+  memory_lock: true
+
+discovery.zen.minimum_master_nodes: 1
+
+xpack:
+  license:
+    self_generated.type: basic
